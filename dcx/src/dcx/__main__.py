@@ -141,6 +141,10 @@ if os.path.isfile("play.js"):
                 url_for_get = expand_column(play_part, 2)
                 driver.get(url_for_get)
 
+            if play_part[1] == "max": ###ntcommand
+                driver.maximize_window()
+                time.sleep(1)
+
             if play_part[1] == "relget": ###ntcommand
                 urlpart_for_get = expand_column(play_part, 2)
                 url_actual = driver.execute_script('return location.href;').strip().split("\n")[0].strip()
