@@ -63,7 +63,11 @@ logdir_full_img = os.path.join(logbasedir, "full-img")
 os.makedirs(logdir_full_img, exist_ok=False)
 
 
+reg_activity_log = {}
+
 def reg_write(k, v):
+    if not k in reg_activity_log.keys():
+        reg_activity_log[k] = len(reg_activity_log.keys())
     with open(os.path.join(logdir_reg, k), 'w') as f:
         f.write(v)
 
@@ -93,8 +97,12 @@ def break_handler(data):
         print("")
         print("HELP")
         print("")
-    if data == "href":
+    if data == "h":
         print("href=%s" % driver.execute_script('return location.href;'))
+    if data == "r":
+        print("Dumping registry: %d entries" % len(reg_activity_log))
+        for x in reg_activity_log.keys():
+            print("  %s = %s" % (x, reg_read(x)))
     if data == "q":
         print("QUIT")
         driver.quit()
