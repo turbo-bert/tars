@@ -67,6 +67,10 @@ def reg_write(k, v):
     with open(os.path.join(logdir_reg, k), 'w') as f:
         f.write(v)
 
+def reg_read(k):
+    with open(os.path.join(logdir_reg, k), 'r') as f:
+        return f.read()
+
 def content_provider_facade(src, provider_name=""):
     if "+" in provider_name:
         provider_chain = provider_name.split("+")
@@ -207,6 +211,14 @@ if os.path.isfile("play.js"):
 
             if play_part[1] == "click": ###tcommand
                 lel[0].click()
+
+            if play_part[1] == "checked01": ###tcommand
+                varname = play_part[2]
+                if lel[0].is_selected():
+                    reg_write(varname, '1')
+                else:
+                    reg_write(varname, '0')
+                logging.info("REG: %s = %s" % (varname, reg_read(varname)))
 
             if play_part[1] == "clear": ###tcommand
                 lel[0].clear()
