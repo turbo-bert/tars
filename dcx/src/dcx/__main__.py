@@ -21,6 +21,8 @@ from selenium.webdriver.support.ui import WebDriverWait as WDW
 from selenium.webdriver.support.ui import Select as SEL
 from selenium.webdriver.support import expected_conditions as EC
 
+from urllib.parse import urlparse
+
 import selenium
 #from selenium.webdriver.firefox.firefox_profile import FirefoxProfile as FFProfile
 
@@ -138,6 +140,13 @@ if os.path.isfile("play.js"):
             if play_part[1] == "get": ###ntcommand
                 url_for_get = expand_column(play_part, 2)
                 driver.get(url_for_get)
+
+            if play_part[1] == "relget": ###ntcommand
+                urlpart_for_get = expand_column(play_part, 2)
+                url_actual = driver.execute_script('return location.href;').strip().split("\n")[0].strip()
+                url_data = urlparse(url_actual)
+                url_target = url_data.scheme + "://" + url_data.netloc + urlpart_for_get
+                driver.get(url_target)
 
             if play_part[1] == "sleep":###ntcommand
                 time.sleep(float(play_part[2]))
