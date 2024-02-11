@@ -94,6 +94,17 @@ def content_provider_facade(src, provider_name=""):
         return src
 
 
+def get_all_a_href(min_slashes=0):
+    all_href={}
+    all_a = driver.find_elements(BY.XPATH, "//a")
+    for a in all_a:
+        href = a.get_attribute("href")
+        ac = ['_' for x in href if x=="/"]
+        if len(ac) >= min_slashes:
+            all_href[href] = True
+    return sorted(list(all_href.keys()))
+
+
 def break_handler(data):
     if data == "?":
         print("")
@@ -104,11 +115,8 @@ def break_handler(data):
         with open("BODY", "w") as bf:
             bf.write(b.get_attribute("innerHTML"))
 
-        all_a = driver.find_elements(BY.XPATH, "//a")
         with open("A", "w") as af:
-            #bf.write(b.get_attribute("innerHTML"))
-            for a in all_a:
-                af.write("%s\n" % a.get_attribute("href"))
+            af.write("\n".join(get_all_a_href(5)))
 
 
         pass
@@ -219,6 +227,11 @@ if os.path.isfile("play.js"):
                 varname = play_part[2]
                 code_plain = base64.b64decode(play_part[3]).decode("utf-8")
                 res = str(driver.execute_script(code_plain))
+                reg_write(varname, res)
+
+            if play_part[1] == "a":###ntcommand
+                varname = play_part[2]
+                res="\n".join(get_all_a_href())
                 reg_write(varname, res)
 
 
