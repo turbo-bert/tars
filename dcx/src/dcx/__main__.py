@@ -37,6 +37,8 @@ default_wait = 30
 
 opts = FFOptions()
 opts.add_argument("-devtools")
+opts.set_preference('media.mediasource.enabled', False)
+
 #opts.add_argument("-jsconsole")
 
 
@@ -97,6 +99,25 @@ def break_handler(data):
         print("")
         print("HELP")
         print("")
+    if data == "d":
+        b = driver.find_element(BY.XPATH, "//body")
+        with open("BODY", "w") as bf:
+            bf.write(b.get_attribute("innerHTML"))
+
+        all_a = driver.find_elements(BY.XPATH, "//a")
+        with open("A", "w") as af:
+            #bf.write(b.get_attribute("innerHTML"))
+            for a in all_a:
+                af.write("%s\n" % a.get_attribute("href"))
+
+
+        pass
+        #debug dev
+        # vids = driver.find_elements(BY.XPATH, "//video/source")
+        # for v in vids:
+        #     print(v)
+        #     print("_%s_" % v.get_attribute("src"))
+        #     print("===")
     if data == "h":
         print("href=%s" % driver.execute_script('return location.href;'))
     if data == "r":
@@ -137,7 +158,8 @@ if os.path.isfile("play.js"):
         ppl = len(play_part) # play part length
         play_part_i+=1
 
-
+        logdir_part = os.path.join(logbasedir, "parts", "part-%04d" % play_part_i)
+        os.makedirs(logdir_part, exist_ok=False)
 
         #pre tasks
         viewport_png_in = os.path.join(logdir_viewport_img, 'part-%08d-in.png' % play_part_i)
@@ -202,34 +224,39 @@ if os.path.isfile("play.js"):
 
         else:
             lel = None # list of elements
-            if play_part[0].startswith("id:"):
-                target_id = play_part[0][3:]
-                lel = WDW(driver=driver, timeout=default_wait).until(lambda x: x.find_elements(BY.ID, target_id))
-                #lel = driver.find_elements(BY.ID, target_id)
+            
+            if play_part[0] == "//":
+                pass
             else:
-                lel = WDW(driver=driver, timeout=default_wait).until(lambda x: x.find_elements(BY.XPATH, play_part[0]))
-                #lel = driver.find_elements(BY.XPATH, play_part[0])
 
-            if play_part[1] == "type": ###tcommand
-                content = expand_column(play_part, 2)
-                # content = play_part[2]
-                # if ppl > 3:
-                #     content = content_provider_facade(content, play_part[3])
-                lel[0].send_keys(content)
-
-            if play_part[1] == "click": ###tcommand
-                lel[0].click()
-
-            if play_part[1] == "checked01": ###tcommand
-                varname = play_part[2]
-                if lel[0].is_selected():
-                    reg_write(varname, '1')
+                if play_part[0].startswith("id:"):
+                    target_id = play_part[0][3:]
+                    lel = WDW(driver=driver, timeout=default_wait).until(lambda x: x.find_elements(BY.ID, target_id))
+                    #lel = driver.find_elements(BY.ID, target_id)
                 else:
-                    reg_write(varname, '0')
-                logging.info("REG: %s = %s" % (varname, reg_read(varname)))
+                    lel = WDW(driver=driver, timeout=default_wait).until(lambda x: x.find_elements(BY.XPATH, play_part[0]))
+                    #lel = driver.find_elements(BY.XPATH, play_part[0])
 
-            if play_part[1] == "clear": ###tcommand
-                lel[0].clear()
+                if play_part[1] == "type": ###tcommand
+                    content = expand_column(play_part, 2)
+                    # content = play_part[2]
+                    # if ppl > 3:
+                    #     content = content_provider_facade(content, play_part[3])
+                    lel[0].send_keys(content)
+
+                if play_part[1] == "click": ###tcommand
+                    lel[0].click()
+
+                if play_part[1] == "checked01": ###tcommand
+                    varname = play_part[2]
+                    if lel[0].is_selected():
+                        reg_write(varname, '1')
+                    else:
+                        reg_write(varname, '0')
+                    logging.info("REG: %s = %s" % (varname, reg_read(varname)))
+
+                if play_part[1] == "clear": ###tcommand
+                    lel[0].clear()
 
         #post tasks
         viewport_png_out = os.path.join(logdir_viewport_img, 'part-%08d-out.png' % play_part_i)
