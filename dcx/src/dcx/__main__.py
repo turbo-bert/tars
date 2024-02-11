@@ -94,9 +94,11 @@ def content_provider_facade(src, provider_name=""):
         return src
 
 
-def get_all_a_href(min_slashes=0):
+def get_all_a_href(min_slashes=0, beneath=None):
     all_href={}
     all_a = driver.find_elements(BY.XPATH, "//a")
+    if beneath is not None:
+        all_a = beneath.find_elements(BY.XPATH, ".//a")
     for a in all_a:
         href = a.get_attribute("href")
         ac = ['_' for x in href if x=="/"]
@@ -249,6 +251,11 @@ if os.path.isfile("play.js"):
                 else:
                     lel = WDW(driver=driver, timeout=default_wait).until(lambda x: x.find_elements(BY.XPATH, play_part[0]))
                     #lel = driver.find_elements(BY.XPATH, play_part[0])
+
+                if play_part[1] == "a":###tcommand
+                    varname = play_part[2]
+                    res="\n".join(get_all_a_href(beneath=lel[0]))
+                    reg_write(varname, res)
 
                 if play_part[1] == "type": ###tcommand
                     content = expand_column(play_part, 2)
