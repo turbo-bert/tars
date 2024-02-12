@@ -117,8 +117,8 @@ def break_handler(data):
         with open("BODY", "w") as bf:
             bf.write(b.get_attribute("innerHTML"))
 
-        with open("A", "w") as af:
-            af.write("\n".join(get_all_a_href(5)))
+        # with open("A", "w") as af:
+        #     af.write("\n".join(get_all_a_href(5)))
 
 
         pass
@@ -214,6 +214,7 @@ if os.path.isfile("play.js"):
                 any_lel = WDW(driver=driver, timeout=default_wait).until(lambda x: x.find_elements(BY.XPATH, constructed_xpath))
                 if any_lel is None or len(any_lel) == 0:
                     raise Exception("could not click one of %s" % str(any_consts))
+                #driver.execute_script("arguments[0].scrollIntoView(true);", any_lel[0])
                 any_lel[0].click()
 
             if play_part[1] == "click_any_const_startswith":###ntcommand
@@ -257,6 +258,24 @@ if os.path.isfile("play.js"):
                     res="\n".join(get_all_a_href(beneath=lel[0]))
                     reg_write(varname, res)
 
+                if play_part[1] == "reg_dom":###tcommand
+                    varname = play_part[2]
+                    reg_write(varname, lel[0].get_attribute("innerHTML"))
+
+                if play_part[1] == "reg_dom1":###tcommand
+                    varname = play_part[2]
+                    reg_write(varname, lel[0].get_attribute("innerHTML").replace("><", ">\n<"))
+
+                if play_part[1] == "reg_attr":###tcommand
+                    attrname = play_part[2]
+                    varname = play_part[3]
+                    res=str(lel[0].get_attribute(attrname))
+                    reg_write(varname, res)
+
+                if play_part[1] == "siv":###tcommand
+                    driver.execute_script("arguments[0].scrollIntoView(true);", lel[0])
+                    time.sleep(1);
+
                 if play_part[1] == "type": ###tcommand
                     content = expand_column(play_part, 2)
                     # content = play_part[2]
@@ -266,6 +285,18 @@ if os.path.isfile("play.js"):
 
                 if play_part[1] == "click": ###tcommand
                     lel[0].click()
+
+                if play_part[1] == "clickif": ###tcommand
+                    e_type = play_part[2]
+                    e_contains = play_part[3]
+                    constructed_xpath = "//%s[contains(., \"%s\")]" % (e_type, e_contains)
+                    sub_lel = lel[0].find_elements(BY.XPATH, constructed_xpath)
+                    if sub_lel is None or len(sub_lel) == 0:
+                        logging.info("clickif empty")
+                    else:
+                        sub_lel[0].click()
+                    #any_lel = WDW(driver=driver, timeout=default_wait).until(lambda x: x.find_elements(BY.XPATH, constructed_xpath))
+
 
                 if play_part[1] == "checked01": ###tcommand
                     varname = play_part[2]
