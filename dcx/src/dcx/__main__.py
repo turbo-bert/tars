@@ -185,6 +185,10 @@ if os.path.isfile("play.js"):
                 url_for_get = expand_column(play_part, 2)
                 driver.get(url_for_get)
 
+            if play_part[1] == "sam": ###ntcommand
+                sentence = play_part[2]
+                subprocess.call("""/bin/bash -c "say -v Samantha '%s'; exit 0" """ % sentence, shell=True)
+
             if play_part[1] == "max": ###ntcommand
                 driver.maximize_window()
                 time.sleep(1)
