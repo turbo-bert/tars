@@ -286,6 +286,14 @@ if os.path.isfile("play.js"):
                 if play_part[1] == "click": ###tcommand
                     lel[0].click()
 
+                if play_part[1] == "checked": ###tcommand
+                    if lel[0].is_selected() == False:
+                        lel[0].click()
+
+                if play_part[1] == "unchecked": ###tcommand
+                    if lel[0].is_selected() == True:
+                        lel[0].click()
+
                 if play_part[1] == "clickif": ###tcommand
                     e_type = play_part[2]
                     e_contains = play_part[3]
